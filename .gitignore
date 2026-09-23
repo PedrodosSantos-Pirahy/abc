@@ -1,0 +1,7 @@
+node_modules/
+dist/
+.env
+swagger-output.json
+*.log
+certs/
+.claude/
