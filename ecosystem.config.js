@@ -1,7 +1,7 @@
 module.exports = {
   apps: [
     {
-      name: "manutencao-backend",
+      name: "backend-manutencao",
       script: "dist/server.js",
       cwd: __dirname,
       env: {
