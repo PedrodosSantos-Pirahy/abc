@@ -49,14 +49,14 @@ export class OsController extends BaseController<Os> {
   // * centenas/milhares de itens nas telas de lista grande (Kanban,
   // * Dashboard, Histórico), o que estoura o limite prático de uma URL GET.
   buscarLote = asyncHandler(async (req: Request, res: Response) => {
-    const { page, pageSize, sortBy, sortDir, nrSol, nrSolIn, serie, matriculaResponsavel, emissaoDe, emissaoAte } =
+    const { page, pageSize, sortBy, sortDir, nrSol, nrSolIn, serie, matriculaResponsavel, emissaoDe, emissaoAte, nrOrdParcial } =
       req.body as {
         page?: number; pageSize?: number; sortBy?: string; sortDir?: "ASC" | "DESC";
         nrSol?: number; nrSolIn?: number[]; serie?: string; matriculaResponsavel?: string;
-        emissaoDe?: string; emissaoAte?: string;
+        emissaoDe?: string; emissaoAte?: string; nrOrdParcial?: string;
       };
     const resultado = await this.osService.buscar(
-      { nrSol, nrSolIn, serie, matriculaResponsavel, emissaoDe, emissaoAte },
+      { nrSol, nrSolIn, serie, matriculaResponsavel, emissaoDe, emissaoAte, nrOrdParcial },
       { page, pageSize, sortBy, sortDir },
     );
     res.json(resultado);

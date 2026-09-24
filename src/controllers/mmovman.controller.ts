@@ -37,12 +37,22 @@ export class MmovmanController extends BaseController<Mmovman> {
   // * com querystring tem limite prático de tamanho de URL; POST com corpo
   // * JSON não.
   buscarLote = asyncHandler(async (req: Request, res: Response) => {
-    const { page, pageSize, sortBy, sortDir, dataDe, dataAte, numeros, equip } = req.body as {
+    const {
+      page, pageSize, sortBy, sortDir, dataDe, dataAte, numeros, equip,
+      risco, priorid, tipo, atividade, setor, local, serie, perg1, perg2, perg3, numeroParcial,
+      funcSolIn, numerosPermitidos,
+    } = req.body as {
       page?: number; pageSize?: number; sortBy?: string; sortDir?: "ASC" | "DESC";
       dataDe?: string; dataAte?: string; numeros?: number[]; equip?: number;
+      risco?: number; priorid?: number; tipo?: number; atividade?: number; setor?: number; local?: number;
+      serie?: string; perg1?: string; perg2?: string; perg3?: string; numeroParcial?: string;
+      funcSolIn?: number[]; numerosPermitidos?: number[];
     };
     const resultado = await this.mmovmanService.buscar(
-      { dataDe, dataAte, numeros, equip },
+      {
+        dataDe, dataAte, numeros, equip, risco, priorid, tipo, atividade, setor, local, serie,
+        perg1, perg2, perg3, numeroParcial, funcSolIn, numerosPermitidos,
+      },
       { page, pageSize, sortBy, sortDir },
     );
     res.json(resultado);

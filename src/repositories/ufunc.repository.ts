@@ -6,6 +6,10 @@ const COLUNAS_UFUNC = ["UFUN_CODIGO", "UFUN_DESCRICAO", "UFUN_ATIVO", "UFUN_EMPR
 
 export interface UfuncFiltros {
   codigos?: string[];
+  // * Busca por nome (ILIKE) — usada pra resolver "solicitante"/"mecânico
+  // * por nome" nos filtros do Kanban antes de filtrar MMOVMAN/
+  // * MMOV_KANBAN_EQUIPE pelos códigos encontrados aqui.
+  nome?: string;
 }
 
 export class UfuncRepository extends BaseRepository<Ufunc> {
@@ -25,6 +29,10 @@ export class UfuncRepository extends BaseRepository<Ufunc> {
     if (filtros.codigos && filtros.codigos.length > 0) {
       valores.push(filtros.codigos);
       clausulas.push(`"UFUN_CODIGO"::varchar = ANY($${valores.length}::varchar[])`);
+    }
+    if (filtros.nome) {
+      valores.push(`%${filtros.nome}%`);
+      clausulas.push(`"UFUN_DESCRICAO" ILIKE $${valores.length}`);
     }
 
     return this.paginar(clausulas.join(" AND "), valores, { ...opcoes, pageSize: opcoes.pageSize ?? 5000 });

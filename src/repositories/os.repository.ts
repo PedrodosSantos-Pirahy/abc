@@ -10,6 +10,9 @@ export interface OsFiltros {
   matriculaResponsavel?: string;
   emissaoDe?: Date | string;
   emissaoAte?: Date | string;
+  // * Busca parcial (ILIKE) pelo próprio número da OS (M_NR_ORD, serial) —
+  // * usada pelo filtro "Nº da OS" do Kanban.
+  nrOrdParcial?: string;
 }
 
 // * Todas as colunas de MMOVEXEC que este backend pode ler/gravar — ver
@@ -84,6 +87,10 @@ export class OsRepository extends BaseRepository<Os> {
         .map((coluna) => this.validarColuna(coluna))
         .join(", ");
       clausulas.push(`$${valores.length} IN (${colunasResponsavel})`);
+    }
+    if (filtros.nrOrdParcial) {
+      valores.push(`%${filtros.nrOrdParcial}%`);
+      clausulas.push(`"M_NR_ORD"::varchar ILIKE $${valores.length}`);
     }
 
     return this.paginar(clausulas.join(" AND "), valores, opcoes);

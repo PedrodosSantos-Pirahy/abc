@@ -27,11 +27,14 @@ export class MmovKanbanEquipeController extends BaseController<MmovKanbanEquipe>
   // * centenas/milhares de itens, o que estoura o limite prático de tamanho
   // * de uma URL GET.
   buscarLote = asyncHandler(async (req: Request, res: Response) => {
-    const { page, pageSize, sortBy, sortDir, numeros, matricula } = req.body as {
+    const { page, pageSize, sortBy, sortDir, numeros, matricula, matriculas, matriculaParcial } = req.body as {
       page?: number; pageSize?: number; sortBy?: string; sortDir?: "ASC" | "DESC";
-      numeros?: number[]; matricula?: string;
+      numeros?: number[]; matricula?: string; matriculas?: string[]; matriculaParcial?: string;
     };
-    const resultado = await this.mmovKanbanEquipeService.buscar({ numeros, matricula }, { page, pageSize, sortBy, sortDir });
+    const resultado = await this.mmovKanbanEquipeService.buscar(
+      { numeros, matricula, matriculas, matriculaParcial },
+      { page, pageSize, sortBy, sortDir },
+    );
     res.json(resultado);
   });
 

@@ -15,12 +15,21 @@ export const EMPRESAS_ERP_VALIDAS = [1, 2];
 // * (`sqlCaseRisco`, abaixo) quanto — se algum dia for preciso — para
 // * calcular o rótulo direto em JS sem outra query.
 export const RISCO_LABELS: Readonly<Record<number, string>> = {
-  0: "Infraestrutura",
-  1: "Reparo",
-  2: "Equipamento Parado",
-  3: "Segurança Funcionários",
-  4: "Contaminação Meio Ambiente",
-  5: "Reparo Temporário",
+  0: "Equipamento Parado",
+  1: "Operando com limitação / defeito",
+  2: "Inspeção / lubrificação",
+  3: "Preventiva programada",
+  4: "Melhoria / modificação",
+};
+
+// * MMOVMAN.M_PERG1/M_PERG2/M_PERG3 — 3 colunas independentes (VARCHAR(1),
+// * 'S'/'N'), cada uma sua própria pergunta de sim/não. Diferente de
+// * RISCO_LABELS (um código, vários valores possíveis), aqui é só o texto de
+// * cada campo.
+export const PERGUNTAS_ERP: Readonly<Record<string, string>> = {
+  M_PERG1: "Existe risco ao meio ambiente?",
+  M_PERG2: "Existe risco à segurança dos funcionários?",
+  M_PERG3: "Foi realizado algum reparo temporário?",
 };
 
 export function descreverRisco(codigo: number | null | undefined): string {

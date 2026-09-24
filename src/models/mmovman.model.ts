@@ -18,4 +18,7 @@ export interface Mmovman {
   M_ATIVIDADE: number | null; // FK -> manut."MATIVIDADE".A_ID
   M_AMBIENTE: number | null; // FK -> manut."MAMBIENTE".AM_ID
   M_SETOR: number | null; // FK -> public."UEQUIPSET".EQPS_CODIGO
+  M_PERG1: string | null; // VARCHAR(1) 'S'/'N' — existe risco ao meio ambiente?
+  M_PERG2: string | null; // VARCHAR(1) 'S'/'N' — existe risco à segurança dos funcionários?
+  M_PERG3: string | null; // VARCHAR(1) 'S'/'N' — foi realizado algum reparo temporário?
 }

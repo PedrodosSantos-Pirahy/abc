@@ -21,6 +21,9 @@ const COLUNAS_MMOVMAN = [
   "M_ATIVIDADE",
   "M_AMBIENTE",
   "M_SETOR",
+  "M_PERG1",
+  "M_PERG2",
+  "M_PERG3",
 ] as const;
 
 export interface MmovmanFiltros {
@@ -28,6 +31,32 @@ export interface MmovmanFiltros {
   dataAte?: string;
   numeros?: number[];
   equip?: number;
+  // * Filtros do painel do Kanban (kanban.component.ts) — todos coluna
+  // * direta de MMOVMAN, sem JOIN.
+  risco?: number;
+  priorid?: number;
+  tipo?: number;
+  atividade?: number;
+  setor?: number;
+  local?: number;
+  serie?: string;
+  perg1?: string;
+  perg2?: string;
+  perg3?: string;
+  // * Busca parcial pelo próprio número da SS (M_NUMERO) — cast pra texto,
+  // * ILIKE.
+  numeroParcial?: string;
+  // * M_FUNC_SOL é nativo de MMOVMAN (só o código, sem o nome) — filtro por
+  // * nome do solicitante primeiro resolve os códigos em UFUNC (frontend), e
+  // * manda a lista aqui.
+  funcSolIn?: number[];
+  // * Lista de N_NUMERO já resolvida em OUTRA tabela (mecânico via
+  // * MMOV_KANBAN_EQUIPE, nº da OS via MMOVEXEC) — campo separado de
+  // * `numeros` de propósito: `numeros` já é usado internamente pra buscar
+  // * um lote específico (ex: SS ativas fora da janela de data no board do
+  // * Kanban); `numerosPermitidos` é sempre um AND adicional por cima disso,
+  // * nunca substitui.
+  numerosPermitidos?: number[];
 }
 
 // * Consulta só nesta tabela — nada de JOIN/EXISTS contra outra tabela do
@@ -57,6 +86,62 @@ export class MmovmanRepository extends BaseRepository<Mmovman> {
     if (filtros.equip !== undefined) {
       valores.push(filtros.equip);
       clausulas.push(`"M_EQUIP" = $${valores.length}`);
+    }
+    if (filtros.risco !== undefined) {
+      valores.push(filtros.risco);
+      clausulas.push(`"M_RISCO" = $${valores.length}`);
+    }
+    if (filtros.priorid !== undefined) {
+      valores.push(filtros.priorid);
+      clausulas.push(`"M_PRIORID" = $${valores.length}`);
+    }
+    if (filtros.tipo !== undefined) {
+      valores.push(filtros.tipo);
+      clausulas.push(`"M_TIPO" = $${valores.length}`);
+    }
+    if (filtros.atividade !== undefined) {
+      valores.push(filtros.atividade);
+      clausulas.push(`"M_ATIVIDADE" = $${valores.length}`);
+    }
+    if (filtros.setor !== undefined) {
+      valores.push(filtros.setor);
+      clausulas.push(`"M_SETOR" = $${valores.length}`);
+    }
+    if (filtros.local !== undefined) {
+      valores.push(filtros.local);
+      clausulas.push(`"M_LOCAL" = $${valores.length}`);
+    }
+    if (filtros.serie) {
+      valores.push(filtros.serie);
+      clausulas.push(`"M_SERIE" = $${valores.length}`);
+    }
+    if (filtros.perg1) {
+      valores.push(filtros.perg1);
+      clausulas.push(`"M_PERG1" = $${valores.length}`);
+    }
+    if (filtros.perg2) {
+      valores.push(filtros.perg2);
+      clausulas.push(`"M_PERG2" = $${valores.length}`);
+    }
+    if (filtros.perg3) {
+      valores.push(filtros.perg3);
+      clausulas.push(`"M_PERG3" = $${valores.length}`);
+    }
+    if (filtros.numeroParcial) {
+      valores.push(`%${filtros.numeroParcial}%`);
+      clausulas.push(`"M_NUMERO"::varchar ILIKE $${valores.length}`);
+    }
+    // * `!== undefined`, não `.length > 0` — uma lista VAZIA aqui significa
+    // * "o filtro indireto rodou e não achou ninguém", tem que devolver zero
+    // * linhas. Tratar [] como "não filtrado" (o bug de antes) fazia uma
+    // * busca de mecânico/solicitante sem resultado mostrar o board inteiro.
+    if (filtros.funcSolIn !== undefined) {
+      valores.push(filtros.funcSolIn);
+      clausulas.push(`"M_FUNC_SOL" = ANY($${valores.length}::int[])`);
+    }
+    if (filtros.numerosPermitidos !== undefined) {
+      valores.push(filtros.numerosPermitidos);
+      clausulas.push(`"M_NUMERO" = ANY($${valores.length}::int[])`);
     }
 
     return this.paginar(clausulas.join(" AND "), valores, { ...opcoes, pageSize: opcoes.pageSize ?? 5000 });

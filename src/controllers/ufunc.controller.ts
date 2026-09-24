@@ -26,10 +26,10 @@ export class UfuncController extends BaseController<Ufunc> {
   // * Mesmo filtro, lendo do corpo (POST) — `codigos` pode ter centenas de
   // * itens nas telas de lista grande.
   buscarLote = asyncHandler(async (req: Request, res: Response) => {
-    const { page, pageSize, sortBy, sortDir, codigos } = req.body as {
-      page?: number; pageSize?: number; sortBy?: string; sortDir?: "ASC" | "DESC"; codigos?: string[];
+    const { page, pageSize, sortBy, sortDir, codigos, nome } = req.body as {
+      page?: number; pageSize?: number; sortBy?: string; sortDir?: "ASC" | "DESC"; codigos?: string[]; nome?: string;
     };
-    const resultado = await this.ufuncService.buscar({ codigos }, { page, pageSize, sortBy, sortDir });
+    const resultado = await this.ufuncService.buscar({ codigos, nome }, { page, pageSize, sortBy, sortDir });
     res.json(resultado);
   });
 }

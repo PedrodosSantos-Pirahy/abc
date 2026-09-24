@@ -18,6 +18,12 @@ const COLUNAS_MMOV_KANBAN_EQUIPE = [
 export interface MmovKanbanEquipeFiltros {
   numeros?: number[];
   matricula?: string;
+  // * Lote de matrículas exatas (ex: resolvidas por nome via UFUNC antes) —
+  // * usado pelo filtro "Mecânico" do Kanban.
+  matriculas?: string[];
+  // * Busca parcial (ILIKE) — cobre o caso de digitar um pedaço da matrícula
+  // * sem bater em nenhum nome.
+  matriculaParcial?: string;
 }
 
 // ? Sem coluna de ativo/inativo — remove() cai no DELETE físico (aliás já é
@@ -42,6 +48,14 @@ export class MmovKanbanEquipeRepository extends BaseRepository<MmovKanbanEquipe>
     if (filtros.matricula) {
       valores.push(filtros.matricula);
       clausulas.push(`"MATRICULA"::varchar = $${valores.length}`);
+    }
+    if (filtros.matriculas && filtros.matriculas.length > 0) {
+      valores.push(filtros.matriculas);
+      clausulas.push(`"MATRICULA"::varchar = ANY($${valores.length}::varchar[])`);
+    }
+    if (filtros.matriculaParcial) {
+      valores.push(`%${filtros.matriculaParcial}%`);
+      clausulas.push(`"MATRICULA"::varchar ILIKE $${valores.length}`);
     }
 
     return this.paginar(clausulas.join(" AND "), valores, { ...opcoes, pageSize: opcoes.pageSize ?? 5000 });
