@@ -101,7 +101,7 @@ export class QualidadeService {
         logoUrl: pdfService.logoBase64(),
         elaboradoEm: agoraComoLiteral(),
         status: "Aprovado",
-        revisao: "01",
+        revisao: "04",
         dataEmissao: agoraComoLiteral(),
         d: {
           N_NUMERO: osId,

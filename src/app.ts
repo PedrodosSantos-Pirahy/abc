@@ -14,7 +14,14 @@ const app = express();
 // Limite explícito de payload — evita que uma requisição gigante gaste
 // CPU/memória processando JSON antes de qualquer validação acontecer.
 // Upload de arquivo usa multer (upload.middleware.ts), que tem limite próprio.
-app.use(express.json({ limit: "1mb" }));
+// * 2mb (era 1mb) — margem de segurança: um pacote de sincronização offline
+// * de uma única OS (fotos de chegada/finalização/cadeado + APR + qualidade,
+// * cada foto já comprimida a ~100KB) mede ~430KB na prática; o limite
+// * antigo de 1mb só sobrava por pouco até o sync passar a mandar 1 OS por
+// * requisição (ver os.service.ts#executarSincronizacaoOffline) — essa
+// * margem é para uma OS individual incomum (mais assinaturas, foto maior),
+// * não para voltar a empacotar várias OS juntas.
+app.use(express.json({ limit: "2mb" }));
 
 app.use(cookieParser());
 

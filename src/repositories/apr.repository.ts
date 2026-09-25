@@ -58,7 +58,7 @@ export class AprRepository {
               "M_CONS_RADIO", "M_CONS_OUTROS", "M_CONS_OUTROS_DESC",
               "M_RESP_1_NOME", "M_RESP_1_ASSINATURA",
               "M_RESP_2_NOME", "M_RESP_2_ASSINATURA"
-          ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23,$24,$25,$26,$27,$28,$29,$30,$31)
+          ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23,$24,$25,$26,$27,$28,$29,$30,$31,$32)
           ON CONFLICT ("N_NUMERO", grupo, tentativa) DO UPDATE SET
               "TAG_EQPG" = EXCLUDED."TAG_EQPG", "M_CHECK_SERVICO" = EXCLUDED."M_CHECK_SERVICO",
               "M_RESP_1_NOME" = EXCLUDED."M_RESP_1_NOME", "M_RESP_1_ASSINATURA" = EXCLUDED."M_RESP_1_ASSINATURA",

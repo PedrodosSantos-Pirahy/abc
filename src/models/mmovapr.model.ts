@@ -1,9 +1,10 @@
 // * Tabela própria da aplicação — formulário de Análise de Risco (APR) de um
 // * grupo numa tentativa da OS. Chave real: (N_NUMERO, grupo, tentativa).
-// ?
-// ? M_RESP_1_ASSINATURA / M_RESP_2_ASSINATURA continuam `bytea` — o mesmo
-// ? padrão de migração pra `manut.arquivos` poderia ser aplicado aqui depois,
-// ? mas isso não foi pedido nesta rodada (só MMOV_REGISTROS e MMOV_QUALIDADE).
+// ! M_RESP_1_ASSINATURA/M_RESP_2_ASSINATURA continuam bytea no banco, mas
+// ! este model reflete o que mmovapr.repository.ts#colunasSelect realmente
+// ! devolve (flags booleanas, não o buffer) — mesmo padrão já aplicado em
+// ! MMOV_REGISTROS/MMOV_QUALIDADE. Pra pegar a assinatura de verdade (base64),
+// ! usa apr.repository.ts#buscarPorOs (endpoint separado, sob demanda).
 export interface Mmovapr {
   APR_ID: number; // PK serial
   N_NUMERO: number; // FK -> manut."MMOVMAN".M_NUMERO (o "osId" usado em todo o app — NÃO é MMOVEXEC.M_NR_ORD)
@@ -41,7 +42,7 @@ export interface Mmovapr {
   M_CONS_OUTROS_DESC: string | null;
 
   M_RESP_1_NOME: string | null;
-  M_RESP_1_ASSINATURA: Buffer | null; // ? candidato a virar arquivo_id numa fase futura
+  tem_resp_1_assinatura: boolean;
   M_RESP_2_NOME: string | null;
-  M_RESP_2_ASSINATURA: Buffer | null; // ? candidato a virar arquivo_id numa fase futura
+  tem_resp_2_assinatura: boolean;
 }
