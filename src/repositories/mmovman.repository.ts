@@ -39,6 +39,9 @@ export interface MmovmanFiltros {
   atividade?: number;
   setor?: number;
   local?: number;
+  // * Junto com `equip`: M_EQUIP só identifica a máquina com M_LOCAL +
+  // * M_EMPRESA (ver ChaveEquipamento em uequipgru.repository.ts).
+  empresa?: number;
   serie?: string;
   perg1?: string;
   perg2?: string;
@@ -110,6 +113,10 @@ export class MmovmanRepository extends BaseRepository<Mmovman> {
     if (filtros.local !== undefined) {
       valores.push(filtros.local);
       clausulas.push(`"M_LOCAL" = $${valores.length}`);
+    }
+    if (filtros.empresa !== undefined) {
+      valores.push(filtros.empresa);
+      clausulas.push(`"M_EMPRESA" = $${valores.length}`);
     }
     if (filtros.serie) {
       valores.push(filtros.serie);

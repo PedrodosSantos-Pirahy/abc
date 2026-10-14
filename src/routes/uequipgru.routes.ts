@@ -6,9 +6,9 @@ const controller = new UequipgruController();
 
 router.get("/", controller.list);
 router.post("/buscar", controller.buscarLote);
-router.get("/:id", controller.getById);
+router.get("/:codigo/:local/:empresa", controller.getById);
 router.post("/", controller.create);
-router.put("/:id", controller.update);
-router.delete("/:id", controller.remove);
+router.put("/:codigo/:local/:empresa", controller.update);
+router.delete("/:codigo/:local/:empresa", controller.remove);
 
 export default router;

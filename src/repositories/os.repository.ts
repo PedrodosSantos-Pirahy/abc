@@ -107,19 +107,34 @@ export class OsRepository extends BaseRepository<Os> {
    */
   /**
    * * Substitui o script SQL manual que rodava de tempos em tempos pra
-   * * preencher M_DT_EMISSAO/M_DISCRIM destas OS (M_LOCAL=2, M_SR_SOL=S —
-   * * nascem direto no ERP legado, sem emissão pelo fluxo normal do
+   * * preencher M_DT_EMISSAO/M_DISCRIM destas OS (M_SR_SOL=S — nascem
+   * * direto no ERP legado, sem emissão pelo fluxo normal do
    * * `os.service.ts`). Chamado pelo hook de MMOV_REGISTROS assim que a
    * * solução aplicada é gravada — ver mmov-registros.service.ts.
-   * * `M_DT_EMISSAO IS NULL` torna isso idempotente: só grava na primeira
-   * * vez, nunca sobrescreve numa chamada seguinte pra mesma OS.
+   * * `M_DT_EMISSAO` só é gravada na primeira vez (idempotente por
+   * * COALESCE — nunca sobrescreve uma emissão já existente). `M_DISCRIM`
+   * * é tratado à parte: antes a mesma trava (`M_DT_EMISSAO IS NULL`)
+   * * cobria os dois campos, então se `discriminacao` chegasse vazia na
+   * * primeira chamada (SOLUCAO_APLICADA ainda sem conteúdo real), o
+   * * discrim ficava em branco PRA SEMPRE — nenhuma chamada seguinte
+   * * conseguia mais corrigir, porque a emissão já não era mais nula.
+   * * Confirmado 2026-09-28: 110 OS série S com discrim vazio mesmo já
+   * * tendo solução aplicada. Agora o discrim é preenchido sempre que
+   * * estiver vazio, independente da emissão já ter sido gravada antes.
+   * ! Restrição a M_LOCAL='2' removida (2026-09-28): existiam 19 OS
+   * ! M_LOCAL=1 série S com solução aplicada e M_DT_EMISSAO nunca
+   * ! preenchida pelo fluxo normal de criação da OS. O COALESCE/CASE acima
+   * ! já é seguro pra qualquer M_LOCAL — só preenche o que estiver vazio,
+   * ! nunca sobrescreve o que a criação normal já gravou certo.
    */
   async emitirParaErpLegado(nrSol: number, dataEmissao: Date, discriminacao: string | null): Promise<void> {
     await this.pool.query(
       `
         UPDATE manut."MMOVEXEC"
-        SET "M_DT_EMISSAO" = $2, "M_DISCRIM" = $3
-        WHERE "M_NR_SOL" = $1 AND "M_LOCAL" = '2' AND "M_SR_SOL" = 'S' AND "M_DT_EMISSAO" IS NULL
+        SET "M_DT_EMISSAO" = COALESCE("M_DT_EMISSAO", $2),
+            "M_DISCRIM" = CASE WHEN "M_DISCRIM" IS NULL OR "M_DISCRIM" = '' THEN $3 ELSE "M_DISCRIM" END
+        WHERE "M_NR_SOL" = $1 AND "M_SR_SOL" = 'S'
+          AND ("M_DT_EMISSAO" IS NULL OR "M_DISCRIM" IS NULL OR "M_DISCRIM" = '')
       `,
       [nrSol, dataEmissao, discriminacao],
     );

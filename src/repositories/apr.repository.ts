@@ -139,7 +139,14 @@ export class AprRepository {
       }
 
       const { rows: maquinaRows } = await client.query(
-        `SELECT e."EQPG_DESCRICAO" as nome FROM manut."MMOVMAN" m LEFT JOIN public."UEQUIPGRU" e ON m."M_EQUIP" = e."EQPG_CODIGO" WHERE m."M_NUMERO" = $1`,
+        `SELECT e."EQPG_DESCRICAO" as nome FROM manut."MMOVMAN" m
+         LEFT JOIN public."UEQUIPGRU" e
+                ON m."M_EQUIP" = e."EQPG_CODIGO" AND m."M_LOCAL" = e."EQPG_LOCAL" AND m."M_EMPRESA" = e."EQPG_EMPRESA"
+         WHERE m."M_NUMERO" = $1
+         -- * M_NUMERO pode repetir na série antiga 'A' em outro local (outra
+         -- * máquina) — prioriza a série atual, mesmo critério do Kanban.
+         ORDER BY m."M_SERIE" DESC
+         LIMIT 1`,
         [input.osId],
       );
       const maquinaNome = maquinaRows[0]?.nome || "Equipamento Geral";
