@@ -17,7 +17,7 @@ const COLUNAS_MMOVMAN = [
   "M_EQUIP",
   "M_LOCAL",
   "M_EMPRESA",
-  "M_TIPO",
+  "M_TIPO_OS",
   "M_ATIVIDADE",
   "M_AMBIENTE",
   "M_SETOR",
@@ -100,7 +100,7 @@ export class MmovmanRepository extends BaseRepository<Mmovman> {
     }
     if (filtros.tipo !== undefined) {
       valores.push(filtros.tipo);
-      clausulas.push(`"M_TIPO" = $${valores.length}`);
+      clausulas.push(`"M_TIPO_OS" = $${valores.length}`);
     }
     if (filtros.atividade !== undefined) {
       valores.push(filtros.atividade);

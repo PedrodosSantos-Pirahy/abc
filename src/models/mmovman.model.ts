@@ -14,7 +14,7 @@ export interface Mmovman {
   M_EQUIP: number | null; // FK -> public."UEQUIPGRU".EQPG_CODIGO
   M_LOCAL: number | null;
   M_EMPRESA: number | null;
-  M_TIPO: number | null; // FK -> manut."MTIPO_OS".TOS_ID
+  M_TIPO_OS: number | null; // FK -> manut."MTIPO_OS".TOS_ID
   M_ATIVIDADE: number | null; // FK -> manut."MATIVIDADE".A_ID
   M_AMBIENTE: number | null; // FK -> manut."MAMBIENTE".AM_ID
   M_SETOR: number | null; // FK -> public."UEQUIPSET".EQPS_CODIGO
